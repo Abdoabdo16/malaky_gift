@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Special Gift for Malak</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ff4d6d;
+            --secondary: #ffb3c1;
+            --dark-bg: #0f0c29;
+            --glass: rgba(255, 255, 255, 0.1);
+            --tulip-red: #d62828;
+        }
+
+        body, html {
+            margin: 0; padding: 0;
+            width: 100%; height: 100%;
+            background: #0f0c29;
+            font-family: 'Poppins', sans-serif;
+            color: white; overflow: hidden;
+        }
+
+        /* --- Gift Box Overlay --- */
+        #gift-overlay {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(to bottom, #24243e, #0f0c29);
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            z-index: 10000; transition: opacity 1s ease, visibility 1s;
+        }
+
+        .box-container { cursor: pointer; text-align: center; transition: transform 0.3s; }
+        .gift-box { font-size: 100px; animation: bounce 2s infinite; display: inline-block; }
+        .tap-text { margin-top: 20px; font-family: 'Dancing Script', cursive; font-size: 1.5rem; color: #ff758f; animation: pulse 1.5s infinite; }
+
+        /* --- Main Content --- */
+        #main-content {
+            opacity: 0; display: none; height: 100vh; width: 100vw;
+            justify-content: center; align-items: center;
+            background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #4d0f28);
+            background-size: 400% 400%;
+            animation: bgGradient 15s ease infinite;
+            transition: opacity 1.5s ease;
+        }
+
+        @keyframes bgGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        #cursor {
+            position: fixed; width: 20px; height: 20px;
+            background: var(--primary); border-radius: 50%;
+            pointer-events: none; z-index: 9999;
+            transform: translate(-50%, -50%); box-shadow: 0 0 15px var(--primary);
+        }
+
+        #canvas { position: absolute; top: 0; left: 0; z-index: 1; }
+
+        .container {
+            position: relative; z-index: 10;
+            background: var(--glass); backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 30px; padding: 40px; text-align: center;
+            max-width: 450px; width: 85%;
+        }
+
+        /* --- شكل الخط اللي طلبته --- */
+        h1 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, #ff4d6d, #ffb3c1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+        }
+
+        /* --- النبض --- */
+        .big-heart {
+            font-size: 60px; cursor: pointer; display: inline-block;
+            animation: heartBeat 1.2s infinite; margin-bottom: 10px;
+        }
+
+        @keyframes heartBeat {
+            0%, 28%, 70% { transform: scale(1); }
+            14%, 42% { transform: scale(1.3); }
+        }
+
+        /* --- الكتابة المتغيرة --- */
+        .typewriter-container {
+            min-height: 50px; margin-top: 15px;
+            font-style: italic; color: #ffb3c1;
+            font-size: 1.1rem;
+        }
+
+        .cursor-blink { animation: blink 0.7s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        .timer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 25px 0; }
+        .time-unit { background: rgba(0, 0, 0, 0.4); padding: 10px; border-radius: 12px; border: 1px solid rgba(255, 77, 109, 0.3); }
+        .time-num { display: block; font-size: 1.5rem; color: #ff758f; font-weight: 600; }
+        .time-label { font-size: 0.65rem; text-transform: uppercase; }
+
+        .wish-time { font-size: 1.2rem; color: rgba(255, 255, 255, 0.6); letter-spacing: 5px; margin-bottom: 15px; }
+
+        .btn-interact { background: var(--primary); border: none; padding: 12px 30px; border-radius: 25px; color: white; cursor: pointer; margin-top: 20px; font-weight: 600; }
+        
+        /* القلوب الطائرة */
+        .floating-heart {
+            position: fixed; color: rgba(255, 77, 109, 0.3);
+            user-select: none; pointer-events: none; z-index: 0;
+            animation: floatUp linear forwards;
+        }
+
+        @keyframes floatUp {
+            from { transform: translateY(110vh) rotate(0deg); opacity: 1; }
+            to { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+        }
+
+        @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-30px);} }
+        @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <audio id="bg-music" loop>
+        <source src="Music.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="gift-overlay" onclick="openGift()">
+        <div class="box-container">
+            <div class="gift-box">🎁</div>
+            <div class="tap-text">You have a surprise, Malakyy...<br>Tap to open</div>
+        </div>
+    </div>
+
+    <div id="main-content">
+        <div id="cursor"></div>
+        <canvas id="canvas"></canvas>
+
+        <div class="container">
+            <div class="big-heart" id="heartBtn">❤️</div>
+            <h1>happy valentine malakyy <span style="color: #d62828;-webkit-text-fill-color: initial;">🌷</span></h1>
+            
+            <div class="timer-grid">
+                <div class="time-unit"><span class="time-num" id="days">00</span><span class="time-label">Days</span></div>
+                <div class="time-unit"><span class="time-num" id="hours">00</span><span class="time-label">Hrs</span></div>
+                <div class="time-unit"><span class="time-num" id="minutes">00</span><span class="time-label">Min</span></div>
+                <div class="time-unit"><span class="time-num" id="seconds">00</span><span class="time-label">Sec</span></div>
+            </div>
+
+            <div class="wish-time">11:11</div>
+
+            <div class="typewriter-container">
+                <span id="text-target"></span><span class="cursor-blink">|</span>
+            </div>
+            
+            <button class="btn-interact" id="surpriseBtn">Click for Surprise 🌷</button>
+            <br>
+            <button style="background:none; border:none; color:white; opacity:0.4; cursor:pointer; margin-top:15px; font-size: 0.8rem;" onclick="toggleMusic()">🎵 Music Control</button>
+        </div>
+    </div>
+
+    <script>
+        const music = document.getElementById('bg-music');
+        const phrases = [
+            "بحبك يا أجمل حد في حياتي..",
+            "100% of my happiness is you",
+            "ربنا يخليكي ليا يا ملاكي..",
+            "أنتي مش بس حبيبتي، أنتي كل دنيتي",
+            "I love you more than words can say",
+    
+            "Stay with me forever <3 ......."
+        ];
+        
+        let phraseIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        const target = document.getElementById('text-target');
+
+        function typeEffect() {
+            const currentPhrase = phrases[phraseIndex];
+            if (isDeleting) {
+                target.textContent = currentPhrase.substring(0, charIndex - 1);
+                charIndex--;
+            } else {
+                target.textContent = currentPhrase.substring(0, charIndex + 1);
+                charIndex++;
+            }
+            let typeSpeed = isDeleting ? 50 : 100;
+            if (!isDeleting && charIndex === currentPhrase.length) {
+                typeSpeed = 2000;
+                isDeleting = true;
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                phraseIndex = (phraseIndex + 1) % phrases.length;
+                typeSpeed = 500;
+            }
+            setTimeout(typeEffect, typeSpeed);
+        }
+
+        function createFloatingHeart() {
+            const heart = document.createElement('div');
+            heart.innerHTML = '❤️';
+            heart.className = 'floating-heart';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.fontSize = (Math.random() * 15 + 10) + 'px';
+            const duration = (Math.random() * 3 + 4);
+            heart.style.animationDuration = duration + 's';
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), duration * 1000);
+        }
+
+        function openGift() {
+            music.play().catch(() => {});
+            document.getElementById('gift-overlay').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('gift-overlay').style.visibility = 'hidden';
+                document.getElementById('main-content').style.display = 'flex';
+                setTimeout(() => { document.getElementById('main-content').style.opacity = '1'; }, 50);
+                initParticles(); 
+                typeEffect(); 
+                setInterval(createFloatingHeart, 600); 
+            }, 1000);
+        }
+
+        function toggleMusic() { music.paused ? music.play() : music.pause(); }
+
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 1;
+                this.speedX = Math.random() * 1 - 0.5;
+                this.speedY = Math.random() * 1 - 0.5;
+            }
+            update() {
+                this.x += this.speedX; this.y += this.speedY;
+                if (this.x > canvas.width) this.x = 0;
+                if (this.y > canvas.height) this.y = 0;
+            }
+            draw() {
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            for (let i = 0; i < 60; i++) particles.push(new Particle());
+            animate();
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animate);
+        }
+
+        document.addEventListener('mousemove', e => {
+            const cursor = document.getElementById('cursor');
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+
+        const anniversary = new Date('2025-07-13T00:00:00').getTime(); 
+        function updateTimer() {
+            const now = new Date().getTime();
+            const diff = now - anniversary;
+            document.getElementById('days').innerText = Math.floor(diff / 86400000);
+            document.getElementById('hours').innerText = Math.floor((diff % 86400000) / 3600000);
+            document.getElementById('minutes').innerText = Math.floor((diff % 3600000) / 60000);
+            document.getElementById('seconds').innerText = Math.floor((diff % 60000) / 1000);
+        }
+        setInterval(updateTimer, 1000);
+
+        document.getElementById('surpriseBtn').onclick = () => {
+            for(let i=0; i<30; i++) {
+                const item = document.createElement('div');
+                item.innerHTML = '💖';
+                item.style.position = 'fixed';
+                item.style.left = Math.random() * 100 + 'vw';
+                item.style.bottom = '-5vh';
+                item.style.fontSize = '30px';
+                item.style.zIndex = '11000';
+                item.style.transition = 'all 2.5s ease-out';
+                document.body.appendChild(item);
+                setTimeout(() => {
+                    item.style.transform = `translateY(-110vh) rotate(360deg)`;
+                    item.style.opacity = '0';
+                }, 100);
+                setTimeout(() => item.remove(), 2500);
+            }
+        };
+
+        document.getElementById('heartBtn').onclick = () => alert("I wish for you happy years and be together forever 🌷❤️");
+    </script>
+</body>
+</html>
